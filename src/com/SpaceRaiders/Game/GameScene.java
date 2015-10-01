@@ -12,13 +12,21 @@ public abstract class GameScene {
 	protected SpriteBatch batch;
 	
 
-	public GameScene(FileHandle scene){		
+	public GameScene(FileHandle scene){	
+		batch = new SpriteBatch();
+		font = new BitmapFont();
+		shapeRenderer = new ShapeRenderer();
 	}
 	
-	public void begin(){		
+	//Temporário
+	public GameScene(){
+		batch = new SpriteBatch();
+		font = new BitmapFont();
+		shapeRenderer = new ShapeRenderer();
 	}
 	
-	public void update(){		
-	}
+	abstract public void begin();
+	
+	abstract public void update();
 
 }

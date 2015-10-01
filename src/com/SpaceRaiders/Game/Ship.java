@@ -4,10 +4,13 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Ship extends GameActor {
 
-	public int hp;
+	protected int hp;
 
-	public Vector2 position;
+	protected Vector2 position;
 
+	public Ship(){
+		super();
+	}
 	
 	public void displayHud(){		
 	}

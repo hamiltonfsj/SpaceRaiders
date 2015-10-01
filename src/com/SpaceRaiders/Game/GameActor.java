@@ -4,8 +4,12 @@ import com.badlogic.gdx.math.Rectangle;
 
 public abstract class GameActor {
 
-	protected Rectangle box;
-
+	public Rectangle box; //public temporariamente
+	
+	
+	public GameActor(){
+		box = new Rectangle();
+	}
 
 	public void update() {
 	}
