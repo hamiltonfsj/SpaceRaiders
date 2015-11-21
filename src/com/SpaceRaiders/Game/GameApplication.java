@@ -12,7 +12,7 @@ public class GameApplication extends ApplicationAdapter {
 	private int frameCount;
 	private FileHandle sceneSource;
 	private GameScene gameScene;
-	private GameScene scene;
+
 	
 	boolean menu; //temporário
 	
@@ -24,8 +24,7 @@ public class GameApplication extends ApplicationAdapter {
 	@Override
 	public void create(){
 		frameCount = 0;
-		gameScene = new GameSceneMenu();
-		
+		loadScene("MainMenu.scn");
 		menu = true;
 	}
 	
@@ -34,7 +33,7 @@ public class GameApplication extends ApplicationAdapter {
 		frameCount += 1;
 		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gameScene.update();
+		gameScene.update(this);
 		
 		
 		if(Gdx.input.isKeyJustPressed(Keys.Q)){
@@ -43,6 +42,13 @@ public class GameApplication extends ApplicationAdapter {
 	}
 	
 	public void loadScene(String sceneSource){
+		
+		FileHandle scene = Gdx.files.internal(sceneSource);
+		
+		if(scene.readString().split("\n")[0].trim().equals("@menu;")){
+			gameScene = new GameSceneMenu(scene);
+			menu = true;
+		}
 	}
 	
 	//temporário

@@ -59,5 +59,24 @@ public class GameSceneStage extends GameScene {
 		ship.update();
 		
 	}
+	
+	@Override
+	public void update(GameApplication game) {
+		// TODO Auto-generated method stub
+		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		shapeRenderer.begin(ShapeType.Filled);
+		shapeRenderer.setColor(0.5f, 0, 0, 1);
+		shapeRenderer.rect(ship.box.x, ship.box.y, ship.box.width, ship.box.height);
+		shapeRenderer.end();
+		
+		batch.begin();
+		font.draw(batch, "Você está numa fase! Pressione Q para ir para o menu", 50, Gdx.graphics.getHeight()-20);
+		batch.end();
+		
+		ship.update();
+		
+	}
 
 }

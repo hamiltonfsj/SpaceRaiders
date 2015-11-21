@@ -1,5 +1,6 @@
 package com.SpaceRaiders.Game;
 
+
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,6 +27,8 @@ public abstract class GameScene {
 	}
 	
 	abstract public void begin();
+	
+	abstract public void update(GameApplication game);
 	
 	abstract public void update();
 
