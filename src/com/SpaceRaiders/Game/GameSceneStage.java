@@ -67,9 +67,6 @@ public class GameSceneStage extends GameScene {
 		for(int i=0; i<enemies.get(currentGroup).size; i++){
 			shapeRenderer.rect(enemies.get(currentGroup).get(i).box.x, enemies.get(currentGroup).get(i).box.y, enemies.get(currentGroup).get(i).box.width, enemies.get(currentGroup).get(i).box.height);
 			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-				shapeRenderer.setColor(0.5f, 1, 0, 1);
-				shapeRenderer.rect(enemies.get(currentGroup).get(i).data.get(j).centerX,enemies.get(currentGroup).get(i).data.get(j).centerY,enemies.get(currentGroup).get(i).data.get(j).box.width,enemies.get(currentGroup).get(i).data.get(j).box.height);
-				
 				shapeRenderer.setColor(0.5f, 0, 0, 1);
 				shapeRenderer.rect(enemies.get(currentGroup).get(i).data.get(j).box.x,enemies.get(currentGroup).get(i).data.get(j).box.y,enemies.get(currentGroup).get(i).data.get(j).box.width,enemies.get(currentGroup).get(i).data.get(j).box.height);
 			}

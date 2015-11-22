@@ -17,7 +17,6 @@ public class ShipData extends GameActor {
 		
 		centerX = owner.box.x + owner.box.width/2 - box.width/2;
 		centerY = owner.box.y + owner.box.height/2 - box.height/2;
-		System.out.println(centerX);
 		
 		move(owner.data.size*distance);
 	}
