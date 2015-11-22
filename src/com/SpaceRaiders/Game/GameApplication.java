@@ -24,8 +24,9 @@ public class GameApplication extends ApplicationAdapter {
 	@Override
 	public void create(){
 		frameCount = 0;
-		loadScene("MainMenu.scn");
-		menu = true;
+		//loadScene("MainMenu.scn");
+		gameScene = new GameSceneStage();
+		//menu = true;
 	}
 	
 	@Override

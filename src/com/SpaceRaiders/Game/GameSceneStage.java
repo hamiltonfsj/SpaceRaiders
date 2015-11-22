@@ -6,23 +6,31 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSceneStage extends GameScene {
 	
-	private int currentGroup;
+	public int currentGroup, scanCount;
 	private int enemiesCount;
 	
 	private HeroShip ship;
 	private EnemyShip enemyTest;
 	private OrthographicCamera camera;
+	private Texture imgRaidOn, imgRaidOff;
+	private Texture imgBackground;
 	private Texture imgShip;
 	private Texture imgEnemyShip;
-	private Texture imgShipData;
+	private Texture imgShipDataA, imgShipDataB;
 	private Texture imgShot;
-	private Array<Array<EnemyShip>> enemies;
+	private Texture imgHeatBar, imgLifeBar, imgArrowOff, imgArrowOn;
+	public Array<Array<EnemyShip>> enemies;
 	private Array<Bullet> bullets;
+	private String shader;
+	private ShaderProgram shaderProgram;
 
 	public GameSceneStage(FileHandle scene) {
 		super(scene);
@@ -31,9 +39,26 @@ public class GameSceneStage extends GameScene {
 	//Temporário
 	public GameSceneStage() {
 		super();
+		
+		scanCount = 3;
+		//Carregando Imagens
+		imgBackground = new Texture(Gdx.files.internal("Space.png"));
+		imgShip = new Texture(Gdx.files.internal("Ship.png"));
+		imgShot = new Texture(Gdx.files.internal("Bullet.png"));
+		imgRaidOn = new Texture(Gdx.files.internal("RAIDon2.png"));
+		imgRaidOff = new Texture(Gdx.files.internal("RAIDoff2.png"));
+		imgEnemyShip = new Texture(Gdx.files.internal("Raid.png"));
+		imgShipDataA = new Texture(Gdx.files.internal("Bit_0.png"));
+		imgShipDataB = new Texture(Gdx.files.internal("Bit_1.png"));
+		
+		imgHeatBar = new Texture(Gdx.files.internal("SAquecimento.png"));
+		imgLifeBar = new Texture(Gdx.files.internal("Vida.png"));
+		imgArrowOff = new Texture(Gdx.files.internal("Setas.png"));
+		imgArrowOn = new Texture(Gdx.files.internal("SetasConfirma.png"));
+		
 		enemies = new Array<Array<EnemyShip>>();
 		bullets = new Array<Bullet>();
-		ship = new HeroShip(bullets);
+		ship = new HeroShip(bullets, this);
 		enemyTest = new EnemyShip(bullets);
 		enemies.add(new Array<EnemyShip>());
 		enemies.get(0).add(enemyTest);
@@ -56,31 +81,55 @@ public class GameSceneStage extends GameScene {
 		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		shapeRenderer.begin(ShapeType.Filled);
-		shapeRenderer.setColor(0.5f, 0, 0, 1);
-		shapeRenderer.rect(ship.box.x, ship.box.y, ship.box.width, ship.box.height);
+
+		
+		batch.begin();
+		batch.setShader(shaderProgram);
+
+		
+		
+		Rectangle boxA;
+		Rectangle boxB;
+		
+		batch.draw(imgBackground, 0, 0);
+		
 		for(int i=0; i<bullets.size; i++){
-			shapeRenderer.rect(bullets.get(i).box.x, bullets.get(i).box.y, bullets.get(i).box.width, bullets.get(i).box.height);
+			boxA = bullets.get(i).box;
+			
+			batch.draw(imgShot, boxA.x, boxA.y);
 
 		}
 		
 		for(int i=0; i<enemies.get(currentGroup).size; i++){
-			shapeRenderer.rect(enemies.get(currentGroup).get(i).box.x, enemies.get(currentGroup).get(i).box.y, enemies.get(currentGroup).get(i).box.width, enemies.get(currentGroup).get(i).box.height);
+			boxA = enemies.get(currentGroup).get(i).box;
+			
+			batch.draw(imgEnemyShip, boxA.x, boxA.y);
 			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-				shapeRenderer.setColor(0.5f, 0, 0, 1);
-				shapeRenderer.rect(enemies.get(currentGroup).get(i).data.get(j).box.x,enemies.get(currentGroup).get(i).data.get(j).box.y,enemies.get(currentGroup).get(i).data.get(j).box.width,enemies.get(currentGroup).get(i).data.get(j).box.height);
-			}
-		}
-		shapeRenderer.end();
-		
-		batch.begin();
-		
-		for(int i=0; i<enemies.get(currentGroup).size; i++){
-			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-				batch.setColor(1, 1, 1, 1);
-				font.draw(batch, Integer.toString(enemies.get(currentGroup).get(i).data.get(j).data), enemies.get(currentGroup).get(i).data.get(j).box.x -2 + enemies.get(currentGroup).get(i).data.get(j).box.width/2, enemies.get(currentGroup).get(i).data.get(j).box.y + 5 + enemies.get(currentGroup).get(i).data.get(j).box.height/2);
+				boxB = enemies.get(currentGroup).get(i).data.get(j).box;
+				float hp = enemies.get(currentGroup).get(i).data.get(j).hp;
+				if(enemies.get(currentGroup).get(i).data.get(j).data == 0)
+					batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height);
+				else
+					batch.draw(imgShipDataB, boxB.x, boxB.y, boxB.width, boxB.height);
 				
 			}
+		}
+		
+		batch.draw(imgShip, ship.box.x, ship.box.y);
+		
+		
+		batch.draw(imgHeatBar, 0, 120);
+		batch.draw(imgLifeBar, 125, 455);
+		batch.draw(imgArrowOff, 0, 0);
+		batch.draw(imgArrowOff, 800 - imgArrowOff.getWidth(), 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), 0, 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), true, false);
+		if(ship.raidRevealed){		
+		batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
+		
+		font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
+		}
+		else{
+			batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());
+			
 		}
 		
 		batch.end();

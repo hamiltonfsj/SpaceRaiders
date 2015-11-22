@@ -4,14 +4,16 @@ public class ShipData extends GameActor {
 	
 	public int data;
 	private boolean isDestroyed;
-	public final static int radius = 100, distance = 52;
+	public final static int radius = 50, distance = 52;
 	public final static float speed = 0.02f;
-	public float rotationCont, centerX, centerY;
+	public float rotationCont, hp, centerX, centerY;
 	public EnemyShip owner;
 
 	
 	public ShipData(EnemyShip owner){
+		hp = 0.8f;
 		this.data = Math.round((float)Math.random());
+		System.out.print(data);
 		this.owner = owner;
 		box.set(0, 0, 20, 20);
 		
