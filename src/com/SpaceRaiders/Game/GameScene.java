@@ -29,7 +29,5 @@ public abstract class GameScene {
 	abstract public void begin();
 	
 	abstract public void update(GameApplication game);
-	
-	abstract public void update();
 
 }

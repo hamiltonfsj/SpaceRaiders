@@ -86,7 +86,7 @@ public class GameSceneMenu extends GameScene {
 		Gdx.gl.glClearColor(0.2f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
 		batch.begin();
-		font.draw(batch, "Você está num menu! Pressione Q para ir para uma fase", 50, 50);
+		font.draw(batch, "Você está num menu! Toque/Clique para ir para uma fase", 50, 50);
 		batch.end();
 		*/
 		wire = true;
@@ -198,12 +198,6 @@ public class GameSceneMenu extends GameScene {
 		
 		}
 			
-		
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
 		
 	}
 
