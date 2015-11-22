@@ -6,6 +6,7 @@ public abstract class GameActor {
 
 	public Rectangle box; //public temporariamente
 	public float speedY;
+	public boolean visible;
 	
 	
 	public GameActor(){

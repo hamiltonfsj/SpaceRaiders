@@ -2,12 +2,14 @@ package com.SpaceRaiders.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -29,8 +31,6 @@ public class GameSceneStage extends GameScene {
 	private Texture imgHeatBar, imgLifeBar, imgArrowOff, imgArrowOn;
 	public Array<Array<EnemyShip>> enemies;
 	private Array<Bullet> bullets;
-	private String shader;
-	private ShaderProgram shaderProgram;
 
 	public GameSceneStage(FileHandle scene) {
 		super(scene);
@@ -84,8 +84,9 @@ public class GameSceneStage extends GameScene {
 
 		
 		batch.begin();
-		batch.setShader(shaderProgram);
-
+		shapeRenderer.setAutoShapeType(true);
+		shapeRenderer.begin();
+		shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 		
 		
 		Rectangle boxA;
@@ -96,7 +97,10 @@ public class GameSceneStage extends GameScene {
 		for(int i=0; i<bullets.size; i++){
 			boxA = bullets.get(i).box;
 			
+			if(bullets.get(i).speedY>0)
 			batch.draw(imgShot, boxA.x, boxA.y);
+			else
+				batch.draw(imgShot, boxA.x, boxA.y, imgShot.getWidth(), imgShot.getHeight(), 0, 0, imgShot.getWidth(), imgShot.getHeight(), false, true);
 
 		}
 		
@@ -108,7 +112,7 @@ public class GameSceneStage extends GameScene {
 				boxB = enemies.get(currentGroup).get(i).data.get(j).box;
 				float hp = enemies.get(currentGroup).get(i).data.get(j).hp;
 				if(enemies.get(currentGroup).get(i).data.get(j).data == 0)
-					batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height);
+					batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height*hp);
 				else
 					batch.draw(imgShipDataB, boxB.x, boxB.y, boxB.width, boxB.height);
 				
@@ -117,23 +121,33 @@ public class GameSceneStage extends GameScene {
 		
 		batch.draw(imgShip, ship.box.x, ship.box.y);
 		
+		if(!ship.overheat)
+		shapeRenderer.setColor(Color.ORANGE);
+		
+		else
+		shapeRenderer.setColor(Color.RED);
+		shapeRenderer.rect(5, 125, 11, 190*ship.heat );
+		
 		
 		batch.draw(imgHeatBar, 0, 120);
-		batch.draw(imgLifeBar, 125, 455);
+		
+		shapeRenderer.setColor(Color.GREEN);
+		shapeRenderer.rect(133, 460, 186*ship.hp, 13 );
 		batch.draw(imgArrowOff, 0, 0);
+		batch.draw(imgLifeBar, 125, 455);
 		batch.draw(imgArrowOff, 800 - imgArrowOff.getWidth(), 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), 0, 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), true, false);
+		
 		if(ship.raidRevealed){		
 		batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
-		
-		font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
+	//	font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
 		}
 		else{
-			batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());
-			
+			batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());	
 		}
+
 		
 		batch.end();
-		
+		shapeRenderer.end();
 		ship.update();
 		for(int i=0; i<bullets.size; i++){
 			bullets.get(i).update();
@@ -148,6 +162,14 @@ public class GameSceneStage extends GameScene {
 			
 		}
 		
+		
+		for(int i=0; i<bullets.size; i++){
+			if(!bullets.get(i).visible){
+				bullets.removeIndex(i);
+				i--;
+				
+			}
+		}
 		
 	}
 

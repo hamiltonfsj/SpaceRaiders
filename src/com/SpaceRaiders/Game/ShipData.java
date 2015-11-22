@@ -11,7 +11,7 @@ public class ShipData extends GameActor {
 
 	
 	public ShipData(EnemyShip owner){
-		hp = 0.8f;
+		hp = 1.0f;
 		this.data = Math.round((float)Math.random());
 		System.out.print(data);
 		this.owner = owner;
@@ -29,7 +29,18 @@ public class ShipData extends GameActor {
 		centerX = owner.box.x + owner.box.width/2 - box.width/2;
 		centerY = owner.box.y + owner.box.height/2 - box.height/2;
 		
+		box.width = 20*hp;
+		box.height = 20*hp;
+		
 		move(1);
+		
+		hp += 0.001;
+		
+		if(hp<0)
+			hp = 0;
+		
+		if(hp>1)
+			hp = 1;
 		
 	}
 	
@@ -41,6 +52,15 @@ public class ShipData extends GameActor {
 		
 	}
 	
-	
+	public void treatCollision(GameActor actor){
+		if(actor.getClass() == Bullet.class){
+			Bullet act = (Bullet)actor;
+			if(!act.isHostile()){
+			owner.bullets.get(owner.bullets.indexOf((Bullet) actor, true)).visible = false;
+			hp -= 0.5f;
+			}
+			
+		}
+	}
 
 }

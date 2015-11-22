@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Ship extends GameActor {
 
-	protected int hp;
+	public float hp;
 	protected Array<Bullet> bullets;
 
 	protected Vector2 position;

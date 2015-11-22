@@ -2,8 +2,12 @@ package com.SpaceRaiders.Game;
 
 public class Bullet extends GameActor {
 	
-	public Bullet(int x, int y, float speedY){
+	private boolean hostile;
+	
+	public Bullet(int x, int y, float speedY, boolean hostile){
 		box.set(x, y, 7, 6);
+		this.visible = true;
+		this.hostile = hostile;
 		this.speedY = speedY;
 	}
 	
@@ -13,4 +17,8 @@ public class Bullet extends GameActor {
 		
 	}
 
+	public boolean isHostile(){
+		return hostile;
+		
+	}
 }
