@@ -12,8 +12,9 @@ public class GameApplication extends ApplicationAdapter {
 	private int frameCount;
 	private FileHandle sceneSource;
 	private GameScene gameScene;
-
-	
+	private Texture fatecLogo;
+	private SpriteBatch fadeBatch;
+	private float fadeFactor;
 	boolean menu; //temporário
 	
 
@@ -24,21 +25,39 @@ public class GameApplication extends ApplicationAdapter {
 	@Override
 	public void create(){
 		frameCount = 0;
-		//loadScene("MainMenu.scn");
-		gameScene = new GameSceneStage();
+		fadeFactor = 0;
+		fatecLogo = new Texture(Gdx.files.internal("Images/fatecLogo.png"));
+		fadeBatch = new SpriteBatch();
+		loadScene("Scenes/MainMenu.scn");
+		//gameScene = new GameSceneStage();
 		//menu = true;
 	}
 	
 	@Override
 	public void render(){
 		frameCount += 1;
-		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gameScene.update(this);
-		
+		if(frameCount>250){
+			gameScene.update(this);
+		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.Q)){
 			loadScene();
+		}
+		
+		
+		if(frameCount<180){
+			fadeBatch.setColor(1, 1, 1, fadeFactor);
+			fadeBatch.begin();
+			fadeBatch.draw(fatecLogo, 0, 0);
+			fadeBatch.end();
+			if(frameCount<60){
+				fadeFactor+=(1f/60);
+			}
+			if(frameCount>120 && frameCount<180){
+				fadeFactor-=(1f/60);
+			}
 		}
 	}
 	
@@ -48,6 +67,14 @@ public class GameApplication extends ApplicationAdapter {
 		
 		if(scene.readString().split("\n")[0].trim().equals("@menu;")){
 			gameScene = new GameSceneMenu(scene);
+			menu = true;
+		}
+		if(scene.readString().split("\n")[0].trim().equals("@cut;")){
+			gameScene = new GameSceneCut(scene);
+			menu = true;
+		}
+		if(scene.readString().split("\n")[0].trim().equals("@stage;")){
+			gameScene = new GameSceneStage(scene);
 			menu = true;
 		}
 	}

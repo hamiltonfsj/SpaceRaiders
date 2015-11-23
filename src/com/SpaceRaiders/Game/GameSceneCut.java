@@ -1,6 +1,5 @@
 package com.SpaceRaiders.Game;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
@@ -11,9 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 
-public class GameSceneMenu extends GameScene {
-
-	private int indexMenu;
+public class GameSceneCut extends GameScene {
+	private int indexScene;
 	
 	private Texture background;
 	private Array<MenuElement> menuElements;
@@ -21,21 +19,22 @@ public class GameSceneMenu extends GameScene {
 	public boolean wire;
 	public int index;
 	public int numberOfButtons;
+	public Array<Texture> scenes;
 	
+	private int countdown;
 	
-	
-	public GameSceneMenu(FileHandle scene) {
+	public GameSceneCut(FileHandle scene) {
 		super(scene);		
 		buildMenu(scene);
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
-		
+		scenes = new Array<Texture>();
 		background = new Texture(Gdx.files.internal("Images/Space.png"));
 		
 	}
 	
 	//Temporário//
-	public GameSceneMenu() {
+	public GameSceneCut() {
 		super();
 		
 		//background = new Texture(Gdx.files.internal())))
@@ -43,14 +42,17 @@ public class GameSceneMenu extends GameScene {
 	
 	public void buildMenu(FileHandle scene){
 		
-		
-		
+		indexScene = 0;	
 		
 		menuElements = new Array<MenuElement>();
+		
 		
 		for(int i = 0; i<scene.readString().split(";").length; i++){
 			if(scene.readString().split(";")[i].split(", ")[0].trim().equals("@menu")){
 				System.out.println("passei pelo menu");
+			}
+			else if(scene.readString().split(";")[i].split(", ")[0].trim().equals("@cut")){
+				System.out.println("passei por uma cut");
 			}
 			else{
 				menuElements.add(new MenuElement(scene.readString().split(";")[i]));
@@ -58,10 +60,9 @@ public class GameSceneMenu extends GameScene {
 			Array<String> a = new Array<String>();
 			for(int j=0; j<scene.readString().split(";")[i].split(", ").length; j++){	
 				a.add(scene.readString().split(";")[i].split(", ")[j].trim());
+				
 			}
 		}
-		
-		
 		
 	}
 	
@@ -79,15 +80,7 @@ public class GameSceneMenu extends GameScene {
 	@Override
 	public void update(GameApplication game) {
 		// TODO Auto-generated method stub
-		
-		/* com
-		Gdx.gl.glClearColor(0.2f, 0f, 0f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
-		batch.begin();
-		font.draw(batch, "Você está num menu! Toque/Clique para ir para uma fase", 50, 50);
-		batch.end();
-		*/
-		
+			
 		
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
@@ -98,6 +91,8 @@ public class GameSceneMenu extends GameScene {
 		batch.setColor(1, 1, 1, 1);
 		batch.begin(); //Start Batch
 		
+		
+		/*
 		for(int i = 0; i<menuElements.size; i++){
 			if(menuElements.get(i).type.equals("Button")){
 				if(menuElements.get(i).index==index){
@@ -118,10 +113,9 @@ public class GameSceneMenu extends GameScene {
 			else if(menuElements.get(i).type.equals("Image")){
 				batch.draw(menuElements.get(i).texture, menuElements.get(i).x, menuElements.get(i).y);
 			}
-		}
+		}*/
 		
-		
-		
+		batch.draw(menuElements.get(indexScene).texture, menuElements.get(indexScene).x, menuElements.get(indexScene).y);
 		
 		batch.end();
 		
@@ -143,25 +137,13 @@ public class GameSceneMenu extends GameScene {
 				
 		
 		//inputs
-		if(Gdx.input.isTouched()){
+		if(Gdx.input.isTouched() && countdown==0){
 			System.out.println("click");
-			for(int i = 0; i<menuElements.size; i++){
-				if(Gdx.input.getX() > menuElements.get(i).x
-				&& 480-Gdx.input.getY() > menuElements.get(i).y
-				&& Gdx.input.getX() < menuElements.get(i).x + menuElements.get(i).width 
-				&& 480-Gdx.input.getY() < menuElements.get(i).y + menuElements.get(i).height){		
-					index = menuElements.get(i).index;
-					if(menuElements.get(i).action.equals("muteMusic")){
-						System.out.println("mutou music");
-					}
-					else if(menuElements.get(i).action.equals("muteSound")){
-						System.out.println("mutou som");
-					}
-					else{
-						game.loadScene(menuElements.get(i).action);	
-					}
-				}
-			}
+			indexScene++;
+			countdown=20;
+			if(indexScene>=menuElements.size){
+				game.loadScene("Scenes/Stage1.scn");
+			}	
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.W)){
@@ -202,7 +184,10 @@ public class GameSceneMenu extends GameScene {
 					
 				}
 			}
+		
 		}
+		
+		if(countdown>0) countdown--;
 			
 		
 	}

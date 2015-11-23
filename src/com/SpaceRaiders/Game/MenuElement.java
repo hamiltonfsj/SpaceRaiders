@@ -20,7 +20,7 @@ public class MenuElement extends GameActor {
 	public MenuElement(String content){
 
 		type = content.split(", ")[0].trim();
-		if(type.equals("ImageButton")){
+		if(type.equals("ImageButton") || type.equals("Image")){
 			texture = new Texture(Gdx.files.internal(content.split(", ")[1].trim()));
 		}
 		
