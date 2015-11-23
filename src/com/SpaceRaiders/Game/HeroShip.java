@@ -42,7 +42,8 @@ public class HeroShip extends Ship {
 	}
 	
 	public void shot(){	
-		bullets.add(new Bullet(Math.round(box.x + box.width/2 - 3.5f), Math.round(box.y + box.height), 10, false));
+		bullets.add(new Bullet(Math.round(box.x + box.width/2 - 19), Math.round(box.y + 38), 10, 0, false));
+		bullets.add(new Bullet(Math.round(box.x + box.width/2 + 12), Math.round(box.y + 38), 10, 0, false));
 	}
 	
 	@Override
@@ -56,7 +57,7 @@ public class HeroShip extends Ship {
 		}
 		
 			
-		heat -= 0.002f;
+		heat -= 0.005f;
 		
 		if(heat<= 0.0f){
 			overheat = false;
@@ -97,7 +98,7 @@ public class HeroShip extends Ship {
 		if(Gdx.input.justTouched() &&  buttonS.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())) ){
 
 			if(!overheat){
-				heat += 0.25;
+				heat += 0.15;
 				shot();
 			
 			}
@@ -130,8 +131,11 @@ public class HeroShip extends Ship {
 	
 	public void treatCollision(GameActor actor){
 		if(actor.getClass() == Bullet.class){
+			Bullet act = (Bullet)actor;
+			if(act.isHostile()){
 			bullets.get(bullets.indexOf((Bullet) actor, true)).visible = false;
-			hp -= 0.1f;
+			hp -= act.dmg;
+			}
 		}
 	}
 }

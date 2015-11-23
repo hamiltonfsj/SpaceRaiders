@@ -17,17 +17,18 @@ import com.badlogic.gdx.utils.Array;
 public class GameSceneStage extends GameScene {
 	
 	public int currentGroup, scanCount;
-	private int enemiesCount;
+	private int enemiesCount, score;
 	
 	private HeroShip ship;
-	private EnemyShip enemyTest;
+	private EnemyShip enemyTest, eB, eC;
 	private OrthographicCamera camera;
 	private Texture imgRaidOn, imgRaidOff;
 	private Texture imgBackground;
 	private Texture imgShip;
-	private Texture imgEnemyShip;
+	private Texture imgEnemyShip, imgEnemyShipB;
 	private Texture imgShipDataA, imgShipDataB;
 	private Texture imgShot;
+
 	private Texture imgHeatBar, imgLifeBar, imgArrowOff, imgArrowOn;
 	public Array<Array<EnemyShip>> enemies;
 	private Array<Bullet> bullets;
@@ -40,6 +41,7 @@ public class GameSceneStage extends GameScene {
 	public GameSceneStage() {
 		super();
 		
+		score = 0;
 		scanCount = 3;
 		//Carregando Imagens
 		imgBackground = new Texture(Gdx.files.internal("Space.png"));
@@ -48,6 +50,7 @@ public class GameSceneStage extends GameScene {
 		imgRaidOn = new Texture(Gdx.files.internal("RAIDon2.png"));
 		imgRaidOff = new Texture(Gdx.files.internal("RAIDoff2.png"));
 		imgEnemyShip = new Texture(Gdx.files.internal("Raid.png"));
+		imgEnemyShipB = new Texture(Gdx.files.internal("RaidOld.png"));
 		imgShipDataA = new Texture(Gdx.files.internal("Bit_0.png"));
 		imgShipDataB = new Texture(Gdx.files.internal("Bit_1.png"));
 		
@@ -59,9 +62,16 @@ public class GameSceneStage extends GameScene {
 		enemies = new Array<Array<EnemyShip>>();
 		bullets = new Array<Bullet>();
 		ship = new HeroShip(bullets, this);
-		enemyTest = new EnemyShip(bullets);
+		enemyTest = new EnemyShip(bullets, 4, 0);
+		eB = new EnemyShip(bullets, 4, 1);
+		eC = new EnemyShip(bullets, 4, 2);
 		enemies.add(new Array<EnemyShip>());
 		enemies.get(0).add(enemyTest);
+		enemies.get(0).add(eB);
+		enemies.get(0).add(eC);
+		enemies.get(0).get(0).setHorde(enemies.get(0));
+		enemies.get(0).get(1).setHorde(enemies.get(0));
+		enemies.get(0).get(2).setHorde(enemies.get(0));
 		
 		currentGroup = 0;
 	}
@@ -106,8 +116,11 @@ public class GameSceneStage extends GameScene {
 		
 		for(int i=0; i<enemies.get(currentGroup).size; i++){
 			boxA = enemies.get(currentGroup).get(i).box;
-			
-			batch.draw(imgEnemyShip, boxA.x, boxA.y);
+			if(enemies.get(currentGroup).get(i).behaviour == 2 || enemies.get(currentGroup).get(i).behaviour == 3
+					|| enemies.get(currentGroup).get(i).behaviour == 4 )
+			batch.draw(imgEnemyShipB, boxA.x, boxA.y);
+			else
+				batch.draw(imgEnemyShip, boxA.x, boxA.y);
 			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
 				boxB = enemies.get(currentGroup).get(i).data.get(j).box;
 				float hp = enemies.get(currentGroup).get(i).data.get(j).hp;
@@ -139,7 +152,7 @@ public class GameSceneStage extends GameScene {
 		
 		if(ship.raidRevealed){		
 		batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
-	//	font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
+		font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
 		}
 		else{
 			batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());	
@@ -166,8 +179,19 @@ public class GameSceneStage extends GameScene {
 		for(int i=0; i<bullets.size; i++){
 			if(!bullets.get(i).visible){
 				bullets.removeIndex(i);
+				score += 5;
 				i--;
 				
+			}
+		}
+		
+		for(int i=0; i<enemies.get(currentGroup).size; i++){
+			if(!enemies.get(currentGroup).get(i).visible){
+				score += enemies.get(currentGroup).get(i).score;
+				
+				enemies.get(currentGroup).removeIndex(i);
+				score += 30;
+				i--;
 			}
 		}
 		
