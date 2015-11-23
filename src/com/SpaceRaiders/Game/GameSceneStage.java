@@ -20,7 +20,7 @@ public class GameSceneStage extends GameScene {
 	private int enemiesCount, score;
 	
 	private HeroShip ship;
-	private EnemyShip enemyTest, eB, eC;
+	private EnemyShip enemyTest, eB, eC, eD;
 	private OrthographicCamera camera;
 	private Texture imgRaidOn, imgRaidOff;
 	private Texture imgBackground;
@@ -62,16 +62,19 @@ public class GameSceneStage extends GameScene {
 		enemies = new Array<Array<EnemyShip>>();
 		bullets = new Array<Bullet>();
 		ship = new HeroShip(bullets, this);
-		enemyTest = new EnemyShip(bullets, 4, 0);
-		eB = new EnemyShip(bullets, 4, 1);
-		eC = new EnemyShip(bullets, 4, 2);
+		enemyTest = new EnemyShip(bullets, 9, 0);
+		eB = new EnemyShip(bullets, 9, 1);
+		eC = new EnemyShip(bullets, 9, 2);
+		eD = new EnemyShip(bullets, 9, 3);
 		enemies.add(new Array<EnemyShip>());
 		enemies.get(0).add(enemyTest);
 		enemies.get(0).add(eB);
 		enemies.get(0).add(eC);
+		enemies.get(0).add(eD);
 		enemies.get(0).get(0).setHorde(enemies.get(0));
 		enemies.get(0).get(1).setHorde(enemies.get(0));
 		enemies.get(0).get(2).setHorde(enemies.get(0));
+		enemies.get(0).get(3).setHorde(enemies.get(0));
 		
 		currentGroup = 0;
 	}
