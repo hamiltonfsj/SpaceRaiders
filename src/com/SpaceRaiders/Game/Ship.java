@@ -1,5 +1,6 @@
 package com.SpaceRaiders.Game;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,6 +26,11 @@ public class Ship extends GameActor {
 	}	
 	
 	private void input(){		
+	}
+
+	public void update(OrthographicCamera camera) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

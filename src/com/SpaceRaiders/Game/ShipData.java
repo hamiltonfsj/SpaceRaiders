@@ -5,7 +5,7 @@ public class ShipData extends GameActor {
 	public int data;
 	public final static int radius = 50;
 	public int distance = 52;
-	public final static float speed = 0.00001f;
+	public final static float speed = 0.01f;
 	public float rotationCont, hp, centerX, centerY;
 	public boolean restore;
 	public EnemyShip owner;

@@ -21,13 +21,14 @@ public class GameSceneStage extends GameScene {
 	
 	private HeroShip ship;
 	private EnemyShip enemyTest, eB, eC, eD;
-	private OrthographicCamera camera;
+	public OrthographicCamera camera; //WTf
 	private Texture imgRaidOn, imgRaidOff;
 	private Texture imgBackground;
 	private Texture imgShip;
 	private Texture imgEnemyShip, imgEnemyShipB;
 	private Texture imgShipDataA, imgShipDataB;
 	private Texture imgShot;
+	private int offset;
 
 	private Texture imgHeatBar, imgLifeBar, imgArrowOff, imgArrowOn;
 	
@@ -36,6 +37,30 @@ public class GameSceneStage extends GameScene {
 
 	public GameSceneStage(FileHandle scene) {
 		super(scene);
+		
+		score = 0;
+		scanCount = 3;
+		//Carregando Imagens
+		imgBackground = new Texture(Gdx.files.internal("Space.png"));
+		imgShip = new Texture(Gdx.files.internal("Ship.png"));
+		imgShot = new Texture(Gdx.files.internal("Bullet.png"));
+		imgRaidOn = new Texture(Gdx.files.internal("RAIDon2.png"));
+		imgRaidOff = new Texture(Gdx.files.internal("RAIDoff2.png"));
+		imgEnemyShip = new Texture(Gdx.files.internal("Raid.png"));
+		imgEnemyShipB = new Texture(Gdx.files.internal("Raid.png"));
+		imgShipDataA = new Texture(Gdx.files.internal("Bit_0.png"));
+		imgShipDataB = new Texture(Gdx.files.internal("Bit_1.png"));
+		
+		imgHeatBar = new Texture(Gdx.files.internal("SAquecimento.png"));
+		imgLifeBar = new Texture(Gdx.files.internal("Vida.png"));
+		imgArrowOff = new Texture(Gdx.files.internal("Setas.png"));
+		imgArrowOn = new Texture(Gdx.files.internal("SetasConfirma.png"));
+		
+		bullets = new Array<Bullet>();
+		ship = new HeroShip(bullets, this);
+		enemyTest = new EnemyShip(bullets, 4, 0);
+		eB = new EnemyShip(bullets, 4, 1);
+		eC = new EnemyShip(bullets, 4, 2);
 		
 		///Enchendo o vetor de inimigos
 		enemies = new Array<Array<EnemyShip>>();
@@ -66,29 +91,7 @@ public class GameSceneStage extends GameScene {
 			
 			
 			
-			score = 0;
-			scanCount = 3;
-			//Carregando Imagens
-			imgBackground = new Texture(Gdx.files.internal("Space.png"));
-			imgShip = new Texture(Gdx.files.internal("Ship.png"));
-			imgShot = new Texture(Gdx.files.internal("Bullet.png"));
-			imgRaidOn = new Texture(Gdx.files.internal("RAIDon2.png"));
-			imgRaidOff = new Texture(Gdx.files.internal("RAIDoff2.png"));
-			imgEnemyShip = new Texture(Gdx.files.internal("Raid.png"));
-			imgEnemyShipB = new Texture(Gdx.files.internal("Raid.png"));
-			imgShipDataA = new Texture(Gdx.files.internal("Bit_0.png"));
-			imgShipDataB = new Texture(Gdx.files.internal("Bit_1.png"));
 			
-			imgHeatBar = new Texture(Gdx.files.internal("SAquecimento.png"));
-			imgLifeBar = new Texture(Gdx.files.internal("Vida.png"));
-			imgArrowOff = new Texture(Gdx.files.internal("Setas.png"));
-			imgArrowOn = new Texture(Gdx.files.internal("SetasConfirma.png"));
-			
-			bullets = new Array<Bullet>();
-			ship = new HeroShip(bullets, this);
-			enemyTest = new EnemyShip(bullets, 4, 0);
-			eB = new EnemyShip(bullets, 4, 1);
-			eC = new EnemyShip(bullets, 4, 2);
 			
 			/*
 			enemies.add(new Array<EnemyShip>());
@@ -155,14 +158,15 @@ public class GameSceneStage extends GameScene {
 		
 	}
 
-	@Override
 	public void update(GameApplication game) {
 		// TODO Auto-generated method stub
 		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 
-		
+		//batch.setColor(0,1,0,1);
+		batch.setProjectionMatrix(game.camera.combined);
+		shapeRenderer.setProjectionMatrix(game.camera.combined);
 		batch.begin();
 		shapeRenderer.setAutoShapeType(true);
 		shapeRenderer.begin();
@@ -171,8 +175,11 @@ public class GameSceneStage extends GameScene {
 		
 		Rectangle boxA;
 		Rectangle boxB;
+		offset+=3;
+		if(offset==480)offset = 0;
 		
-		batch.draw(imgBackground, 0, 0);
+		batch.draw(imgBackground, 0,-offset);
+		batch.draw(imgBackground, 0, 480-offset);
 		
 		for(int i=0; i<bullets.size; i++){
 			boxA = bullets.get(i).box;
@@ -183,7 +190,7 @@ public class GameSceneStage extends GameScene {
 				batch.draw(imgShot, boxA.x, boxA.y, imgShot.getWidth(), imgShot.getHeight(), 0, 0, imgShot.getWidth(), imgShot.getHeight(), false, true);
 
 		}
-		
+
 		for(int i=0; i<enemies.get(currentGroup).size; i++){
 			boxA = enemies.get(currentGroup).get(i).box;
 			if(enemies.get(currentGroup).get(i).behaviour == 2 || enemies.get(currentGroup).get(i).behaviour == 3
@@ -231,7 +238,8 @@ public class GameSceneStage extends GameScene {
 		
 		batch.end();
 		shapeRenderer.end();
-		ship.update();
+	
+		ship.update(game.camera);
 		for(int i=0; i<bullets.size; i++){
 			bullets.get(i).update();
 			

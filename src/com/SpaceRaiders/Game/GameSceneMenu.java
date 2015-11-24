@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSceneMenu extends GameScene {
@@ -90,7 +91,8 @@ public class GameSceneMenu extends GameScene {
 		
 		
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);	
+		batch.setProjectionMatrix(game.camera.combined);
 		batch.begin();
 		batch.draw(background, 0, 0);
 		batch.end();
@@ -146,15 +148,29 @@ public class GameSceneMenu extends GameScene {
 		if(Gdx.input.isTouched()){
 			System.out.println("click");
 			for(int i = 0; i<menuElements.size; i++){
-				if(Gdx.input.getX() > menuElements.get(i).x
-				&& 480-Gdx.input.getY() > menuElements.get(i).y
-				&& Gdx.input.getX() < menuElements.get(i).x + menuElements.get(i).width 
-				&& 480-Gdx.input.getY() < menuElements.get(i).y + menuElements.get(i).height){		
+				
+				Vector3 touchPos = new Vector3();
+		        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+				game.camera.unproject(touchPos);
+				
+				
+				
+				if(touchPos.x > menuElements.get(i).x
+				&& touchPos.y > menuElements.get(i).y
+				&& touchPos.x < menuElements.get(i).x + menuElements.get(i).width 
+				&& touchPos.y < menuElements.get(i).y + menuElements.get(i).height){
+					System.out.println("algo Aconteceu");
 					index = menuElements.get(i).index;
 					if(menuElements.get(i).action.equals("muteMusic")){
 						System.out.println("mutou music");
 					}
 					else if(menuElements.get(i).action.equals("muteSound")){
+						System.out.println("mutou som");
+					}
+					else if(menuElements.get(i).action.equals("Sair")){
+						Gdx.app.exit();
+					}
+					else if(menuElements.get(i).action.trim().equals("")){
 						System.out.println("mutou som");
 					}
 					else{

@@ -11,6 +11,8 @@ public class EnemyShip extends Ship {
 	public Array<ShipData> data;
 	public Array<EnemyShip> horde;
 	
+	public float time;
+	
 	public EnemyShip(Array<Bullet> bullets, int behaviour, int label) {
 		super(bullets);
 		data = new Array<ShipData>();
@@ -18,7 +20,7 @@ public class EnemyShip extends Ship {
 		this.behaviour = behaviour;
 		this.label = label;
 		hp = 1.0f;
-		box.set(250 + label*140, 320, 48, 42);
+		box.set(180 + label*130, 350, 48, 42);
 		
 		switch(behaviour){
 		case 0:
@@ -69,12 +71,19 @@ public class EnemyShip extends Ship {
 
 	@Override
 	public void update() {
-		box.x += speed;
+		box.x += speed*(65/horde.size)*(float) Math.sin(time/100f*3f)/20;
+		time+= 4f;
 		
+		//speed = *
+		
+		/*
+		box.x += speed;
 		if(box.x > limitR || box.x <limitL)
 			speed *= -1;
 		
-		if(box.x%30 == 0)
+		*/
+		
+		if((int)(time) %23 == 0)
 			shot();
 		
 		for(int i=0; i<bullets.size; i++){

@@ -4,9 +4,11 @@ package com.SpaceRaiders.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class HeroShip extends Ship {
@@ -34,7 +36,7 @@ public class HeroShip extends Ship {
 		this.hp = 1.0f;
 		this.heat = 0;
 		this.game = game;
-		box.set(350, 0, 50, 71);
+		box.set(350, 10, 50, 71);
 		
 	}
 	
@@ -47,9 +49,9 @@ public class HeroShip extends Ship {
 	}
 	
 	@Override
-	public void update(){
+	public void update(OrthographicCamera camera){
 		if(!overheat)
-		input();
+		input(camera);
 		if(heat >= 1.0f){
 			overheat = true;
 			heat = 1.0f;
@@ -77,28 +79,42 @@ public class HeroShip extends Ship {
 		
 	}
 	
-	private void input(){
-
+	private void input(OrthographicCamera camera){
+		
 		
 		// SE TOCOU BOTÃO DIREITO
-		if(Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D) ||
-			(Gdx.input.isTouched() && buttonR.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())) )){
-			box.x += 10;
+		if(
+			(Gdx.input.isTouched())){
+			Vector3 touchPos = new Vector3();
+	        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touchPos);
+			if(buttonR.contains(new Vector2(touchPos.x, 480 - touchPos.y)))
+				box.x += 10;
 		}
 		 
+		if(Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D))
+			box.x += 10;
+		
 		
 		// SE TOCOU BOTÃO ESQUERDO
-		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A) ||
-		(Gdx.input.isTouched() && buttonL.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())) )){
+		if(
+		(Gdx.input.isTouched())){
+			Vector3 touchPos = new Vector3();
+	        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touchPos);
+			if(buttonL.contains(new Vector2(touchPos.x, 480 - touchPos.y)))
 			box.x -= 10;
 		}
+		
+		if(Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A))
+			box.x -= 10; 
 		
 		
 		// SE TOCOU CENTRO DA TELA
 		if(Gdx.input.justTouched() &&  buttonS.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())) ){
 
 			if(!overheat){
-				heat += 0.15;
+				heat += 0.05;
 				shot();
 			
 			}
