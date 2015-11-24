@@ -165,8 +165,6 @@ public class GameSceneStage extends GameScene {
 	}
 
 	public void update(GameApplication game) {
-		
-		System.out.println(bullets.size);
 		//Despausado
 		
 		if (!pause){
@@ -219,9 +217,10 @@ public class GameSceneStage extends GameScene {
 						batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height*hp);
 					else
 						batch.draw(imgShipDataB, boxB.x, boxB.y, boxB.width, boxB.height);
+					}
 					
-				}}}
-			}
+				}
+			}}
 			
 			batch.draw(imgShip, ship.box.x, ship.box.y);
 			
@@ -260,13 +259,11 @@ public class GameSceneStage extends GameScene {
 			}
 			
 			for(int i=0; i<enemies.get(currentGroup).size; i++){
-				if(enemies.get(currentGroup).get(i).visible){
 				enemies.get(currentGroup).get(i).update();
 				for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-					if(enemies.get(currentGroup).get(i).data.get(j).visible)
 					enemies.get(currentGroup).get(i).data.get(j).update();
 				}
-				}
+				
 			}
 			
 			
@@ -281,6 +278,8 @@ public class GameSceneStage extends GameScene {
 			for(int i=0; i<enemies.get(currentGroup).size; i++){
 				if(!enemies.get(currentGroup).get(i).visible){
 					score += enemies.get(currentGroup).get(i).score;
+					
+					enemies.get(currentGroup).removeIndex(i);
 					score += 30;
 					i--;
 				}
