@@ -1,6 +1,7 @@
 package com.SpaceRaiders.Game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSceneStage extends GameScene {
+	private boolean pause;
 	
 	public int currentGroup, scanCount;
 	private int enemiesCount, score;
@@ -37,6 +39,8 @@ public class GameSceneStage extends GameScene {
 
 	public GameSceneStage(FileHandle scene) {
 		super(scene);
+		
+		pause = false;
 		
 		score = 0;
 		scanCount = 3;
@@ -111,6 +115,8 @@ public class GameSceneStage extends GameScene {
 	public GameSceneStage() {
 		super();
 		
+		pause = false;
+		
 		score = 0;
 		scanCount = 3;
 		//Carregando Imagens
@@ -159,118 +165,163 @@ public class GameSceneStage extends GameScene {
 	}
 
 	public void update(GameApplication game) {
-		// TODO Auto-generated method stub
-		Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		//Despausado
 		
-
-		//batch.setColor(0,1,0,1);
-		batch.setProjectionMatrix(game.camera.combined);
-		shapeRenderer.setProjectionMatrix(game.camera.combined);
-		batch.begin();
-		shapeRenderer.setAutoShapeType(true);
-		shapeRenderer.begin();
-		shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-		
-		
-		Rectangle boxA;
-		Rectangle boxB;
-		offset+=3;
-		if(offset==480)offset = 0;
-		
-		batch.draw(imgBackground, 0,-offset);
-		batch.draw(imgBackground, 0, 480-offset);
-		
-		for(int i=0; i<bullets.size; i++){
-			boxA = bullets.get(i).box;
+		if (!pause){
 			
-			if(bullets.get(i).speedY>0)
-			batch.draw(imgShot, boxA.x, boxA.y);
-			else
-				batch.draw(imgShot, boxA.x, boxA.y, imgShot.getWidth(), imgShot.getHeight(), 0, 0, imgShot.getWidth(), imgShot.getHeight(), false, true);
-
-		}
-
-		for(int i=0; i<enemies.get(currentGroup).size; i++){
-			boxA = enemies.get(currentGroup).get(i).box;
-			if(enemies.get(currentGroup).get(i).behaviour == 2 || enemies.get(currentGroup).get(i).behaviour == 3
-					|| enemies.get(currentGroup).get(i).behaviour == 4 )
-			batch.draw(imgEnemyShipB, boxA.x, boxA.y);
-			else
-				batch.draw(imgEnemyShip, boxA.x, boxA.y);
-			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-				boxB = enemies.get(currentGroup).get(i).data.get(j).box;
-				float hp = enemies.get(currentGroup).get(i).data.get(j).hp;
-				if(enemies.get(currentGroup).get(i).data.get(j).data == 0)
-					batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height*hp);
-				else
-					batch.draw(imgShipDataB, boxB.x, boxB.y, boxB.width, boxB.height);
-				
-			}
-		}
-		
-		batch.draw(imgShip, ship.box.x, ship.box.y);
-		
-		if(!ship.overheat)
-		shapeRenderer.setColor(Color.ORANGE);
-		
-		else
-		shapeRenderer.setColor(Color.RED);
-		shapeRenderer.rect(5, 125, 11, 190*ship.heat );
-		
-		
-		batch.draw(imgHeatBar, 0, 120);
-		
-		shapeRenderer.setColor(Color.GREEN);
-		shapeRenderer.rect(133, 460, 186*ship.hp, 13 );
-		batch.draw(imgArrowOff, 0, 0);
-		batch.draw(imgLifeBar, 125, 455);
-		batch.draw(imgArrowOff, 800 - imgArrowOff.getWidth(), 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), 0, 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), true, false);
-		
-		if(ship.raidRevealed){		
-		batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
-		font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
-		}
-		else{
-			batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());	
-		}
-
-		
-		batch.end();
-		shapeRenderer.end();
+			// TODO Auto-generated method stub
+			//Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
+			//Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			
 	
-		ship.update(game.camera);
-		for(int i=0; i<bullets.size; i++){
-			bullets.get(i).update();
+			//batch.setColor(0,1,0,1);
+			batch.setProjectionMatrix(game.camera.combined);
+			shapeRenderer.setProjectionMatrix(game.camera.combined);
+			batch.begin();
+			shapeRenderer.setAutoShapeType(true);
+			shapeRenderer.begin();
+			shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+			
+			
+			Rectangle boxA;
+			Rectangle boxB;
+			offset+=3;
+			if(offset==480)offset = 0;
+			
+			batch.draw(imgBackground, 0,-offset);
+			batch.draw(imgBackground, 0, 480-offset);
+			
+			for(int i=0; i<bullets.size; i++){
+				boxA = bullets.get(i).box;
+				
+				if(bullets.get(i).speedY>0)
+				batch.draw(imgShot, boxA.x, boxA.y);
+				else
+					batch.draw(imgShot, boxA.x, boxA.y, imgShot.getWidth(), imgShot.getHeight(), 0, 0, imgShot.getWidth(), imgShot.getHeight(), false, true);
+	
+			}
+	
+			for(int i=0; i<enemies.get(currentGroup).size; i++){
+				boxA = enemies.get(currentGroup).get(i).box;
+				if(enemies.get(currentGroup).get(i).behaviour == 2 || enemies.get(currentGroup).get(i).behaviour == 3
+						|| enemies.get(currentGroup).get(i).behaviour == 4 )
+				batch.draw(imgEnemyShipB, boxA.x, boxA.y);
+				else
+					batch.draw(imgEnemyShip, boxA.x, boxA.y);
+				for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
+					boxB = enemies.get(currentGroup).get(i).data.get(j).box;
+					float hp = enemies.get(currentGroup).get(i).data.get(j).hp;
+					if(enemies.get(currentGroup).get(i).data.get(j).data == 0)
+						batch.draw(imgShipDataA, boxB.x, boxB.y, boxB.width, boxB.height*hp);
+					else
+						batch.draw(imgShipDataB, boxB.x, boxB.y, boxB.width, boxB.height);
+					
+				}
+			}
+			
+			batch.draw(imgShip, ship.box.x, ship.box.y);
+			
+			if(!ship.overheat)
+			shapeRenderer.setColor(Color.ORANGE);
+			
+			else
+			shapeRenderer.setColor(Color.RED);
+			shapeRenderer.rect(5, 125, 11, 190*ship.heat );
+			
+			
+			batch.draw(imgHeatBar, 0, 120);
+			
+			shapeRenderer.setColor(Color.GREEN);
+			shapeRenderer.rect(133, 460, 186*ship.hp, 13 );
+			batch.draw(imgArrowOff, 0, 0);
+			batch.draw(imgLifeBar, 125, 455);
+			batch.draw(imgArrowOff, 800 - imgArrowOff.getWidth(), 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), 0, 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), true, false);
+			
+			if(ship.raidRevealed){		
+			batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
+			font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
+			}
+			else{
+				batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());	
+			}
+	
+			
+			batch.end();
+			shapeRenderer.end();
+		
+			ship.update(game.camera);
+			for(int i=0; i<bullets.size; i++){
+				bullets.get(i).update();
+				
+			}
+			
+			for(int i=0; i<enemies.get(currentGroup).size; i++){
+				enemies.get(currentGroup).get(i).update();
+				for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
+					enemies.get(currentGroup).get(i).data.get(j).update();
+				}
+				
+			}
+			
+			
+			for(int i=0; i<bullets.size; i++){
+				if(!bullets.get(i).visible){
+					bullets.removeIndex(i);
+					score += 5;
+					i--;
+					
+				}
+			}
+			
+			for(int i=0; i<enemies.get(currentGroup).size; i++){
+				if(!enemies.get(currentGroup).get(i).visible){
+					score += enemies.get(currentGroup).get(i).score;
+					
+					enemies.get(currentGroup).removeIndex(i);
+					score += 30;
+					i--;
+				}
+			}
+			
+			//-----------Verificar-----------
+			
+			//Chamar próxima horda
+			int cont = 0;
+			for(int i=0; i<enemies.get(currentGroup).size; i++){
+				if(enemies.get(currentGroup).get(i).visible){
+					cont++;
+				}
+			}
+			if(cont==0){
+				currentGroup++;
+			}
+			
+			//Chamar gameOver
+			if(ship.hp<=0){
+				game.loadScene("Scenes/GameOver.scn");
+			}
 			
 		}
 		
-		for(int i=0; i<enemies.get(currentGroup).size; i++){
-			enemies.get(currentGroup).get(i).update();
-			for(int j=0; j<enemies.get(currentGroup).get(i).data.size; j++){
-				enemies.get(currentGroup).get(i).data.get(j).update();
-			}
+		
+		
+		
+		
+		//=======================Pausar====================
+		else{
+			/*if Dentro do botão 1
+			pause = false;
+			 */
+			
+			/*if Dentro do botão 2
+			 * 
+			//game.makeScene("Scenes/MainMenu.scn"); 
+			 */
 			
 		}
 		
-		
-		for(int i=0; i<bullets.size; i++){
-			if(!bullets.get(i).visible){
-				bullets.removeIndex(i);
-				score += 5;
-				i--;
-				
-			}
-		}
-		
-		for(int i=0; i<enemies.get(currentGroup).size; i++){
-			if(!enemies.get(currentGroup).get(i).visible){
-				score += enemies.get(currentGroup).get(i).score;
-				
-				enemies.get(currentGroup).removeIndex(i);
-				score += 30;
-				i--;
-			}
+		if(Gdx.input.isKeyJustPressed(Keys.P)){
+			pause = !pause;
 		}
 		
 	}
