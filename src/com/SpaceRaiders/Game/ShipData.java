@@ -14,7 +14,7 @@ public class ShipData extends GameActor {
 	public ShipData(EnemyShip owner){
 		restore = true;
 		hp = 1.0f;
-		
+		visible = true;
 		distance = (int) (1.047/speed);
 		this.data = Math.round((float)Math.random());
 		this.owner = owner;

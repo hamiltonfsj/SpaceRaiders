@@ -150,7 +150,7 @@ public class HeroShip extends Ship {
 			Bullet act = (Bullet)actor;
 			if(act.isHostile()){
 			bullets.get(bullets.indexOf((Bullet) actor, true)).visible = false;
-			hp -= act.dmg;
+			hp -= act.dmg/10;
 			}
 		}
 	}

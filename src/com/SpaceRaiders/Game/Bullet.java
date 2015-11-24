@@ -17,6 +17,9 @@ public class Bullet extends GameActor {
 	public void update(){
 		box.y += speedY;
 		
+		if(box.y<0 || box.y>480)
+			visible = false;
+		
 	}
 
 	public boolean isHostile(){

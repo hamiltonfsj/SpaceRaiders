@@ -71,7 +71,7 @@ public class EnemyShip extends Ship {
 
 	@Override
 	public void update() {
-		box.x += speed*(65/horde.size)*(float) Math.sin(time/100f*3f)/20;
+		box.x += speed/3*(65/horde.size)*(float) Math.sin(time/100f*3f)/20;
 		time+= 4f;
 		
 		//speed = *
@@ -98,13 +98,14 @@ public class EnemyShip extends Ship {
 		
 		if(behaviour == 1){
 			for(int i = 0; i<data.size; i++){
+				if(data.get(i).visible){
 				data.get(i).restore = false;
 				for (int j = 0; j < horde.size; j++){
 					if(horde.get(j).data.get(i).hp >= 0.25)
 						data.get(i).restore = true;
 					
 				}
-
+				}
 			}
 		}
 		
@@ -201,7 +202,7 @@ public class EnemyShip extends Ship {
 		if(hp<0)
 			hp = 0;
 		
-		if(hp==0)
+		if(hp==0)	
 			visible = false;
 		
 	}
