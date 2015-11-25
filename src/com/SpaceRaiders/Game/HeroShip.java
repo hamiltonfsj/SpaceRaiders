@@ -114,7 +114,7 @@ public class HeroShip extends Ship {
 		if(Gdx.input.justTouched() &&  buttonS.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())) ){
 
 			if(!overheat){
-				heat += 0.05;
+				heat += 0.09;
 				shot();
 			
 			}
@@ -123,6 +123,8 @@ public class HeroShip extends Ship {
 		// SE TOCOU BOTÃO RAID
 		if(Gdx.input.isKeyPressed(Keys.R) || (Gdx.input.justTouched() &&  buttonA.contains(new Vector2(Gdx.input.getX(), Gdx.input.getY())))){
 			analyze();
+			game.radar = true;
+			game.countdown = 20;
 		}
 		
 		
@@ -142,6 +144,7 @@ public class HeroShip extends Ship {
 		if(!raidRevealed && game.scanCount>0){
 		raidRevealed = true;
 		game.scanCount--;
+		
 		}
 	}
 	

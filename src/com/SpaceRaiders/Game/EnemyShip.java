@@ -31,10 +31,13 @@ public class EnemyShip extends Ship {
 			break;
 		case 1:
 			score = 20;
+			restoreRate = 0.001f;
+			
 			break;
+		case 9:
 		case 10:
 			score = 25;
-			speed = 2;
+			speed = 1.5f;
 			dmg = 0.3f;
 			break;
 		case 5:

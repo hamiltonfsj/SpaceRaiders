@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSceneStage extends GameScene {
@@ -31,7 +32,28 @@ public class GameSceneStage extends GameScene {
 	private Texture imgShipDataA, imgShipDataB;
 	private Texture imgShot;
 	private int offset;
+	public boolean radar;
+	public int countdown;
+	
+	public Texture Desc0;
+	public Texture Desc1;
+	public Texture Desc2;
+	public Texture Desc3;
+	public Texture Desc4;
+	public Texture Desc5;
+	public Texture Desc6;
+	public Texture Desc10;
+	
+	public Texture venceuYEAH;
+	
+	public Texture pauseBtn;
+	
+	public boolean venceu;
+	
+	
 
+	private Array<MenuElement> pauseElements;
+	
 	private Texture imgHeatBar, imgLifeBar, imgArrowOff, imgArrowOn;
 	
 	public Array<Array<EnemyShip>> enemies;
@@ -43,7 +65,7 @@ public class GameSceneStage extends GameScene {
 		pause = false;
 		
 		score = 0;
-		scanCount = 3;
+		scanCount = 10;
 		//Carregando Imagens
 		imgBackground = new Texture(Gdx.files.internal("Space.png"));
 		imgShip = new Texture(Gdx.files.internal("Ship.png"));
@@ -59,6 +81,25 @@ public class GameSceneStage extends GameScene {
 		imgLifeBar = new Texture(Gdx.files.internal("Vida.png"));
 		imgArrowOff = new Texture(Gdx.files.internal("Setas.png"));
 		imgArrowOn = new Texture(Gdx.files.internal("SetasConfirma.png"));
+		
+		//-------------------------------------------------
+		
+		Desc0 = new Texture(Gdx.files.internal("Images/Desc/Desc_0.png"));
+		Desc1 = new Texture(Gdx.files.internal("Images/Desc/Desc_1.png"));
+		Desc2 = new Texture(Gdx.files.internal("Images/Desc/Desc_2.png"));
+		Desc3 = new Texture(Gdx.files.internal("Images/Desc/Desc_3.png"));
+		Desc4 = new Texture(Gdx.files.internal("Images/Desc/Desc_4.png"));
+		Desc5 = new Texture(Gdx.files.internal("Images/Desc/Desc_5.png"));
+		Desc6 = new Texture(Gdx.files.internal("Images/Desc/Desc_6.png"));
+		Desc10 = new Texture(Gdx.files.internal("Images/Desc/Desc_10_01.png"));
+		venceuYEAH = new Texture(Gdx.files.internal("Images/Venceu.jpg"));
+		pauseBtn= new Texture(Gdx.files.internal("Images/PauseButton.png"));
+		
+		//--------------------------------------------
+		
+		
+		
+		
 		
 		bullets = new Array<Bullet>();
 		ship = new HeroShip(bullets, this);
@@ -94,20 +135,28 @@ public class GameSceneStage extends GameScene {
 			//----------------------------------------------------------------------------------------
 			
 			
-			
-			
-			
-			/*
-			enemies.add(new Array<EnemyShip>());
-			enemies.get(0).add(enemyTest);
-			enemies.get(0).add(eB);
-			enemies.get(0).add(eC);
-			enemies.get(0).get(0).setHorde(enemies.get(0));
-			enemies.get(0).get(1).setHorde(enemies.get(0));
-			enemies.get(0).get(2).setHorde(enemies.get(0));
-			*/
-			
 			currentGroup = 0;
+			
+			
+			//----------------------------------------------------------------
+			
+			
+		}
+		pauseElements = new Array<MenuElement>();
+		
+		FileHandle pauseScene = Gdx.files.internal("Scenes/Pause.scn");
+		
+		for(int i = 0; i<pauseScene.readString().split(";").length; i++){
+			if(pauseScene.readString().split(";")[i].split(", ")[0].trim().equals("@menu")){
+				System.out.println("passei pelo menu");
+			}
+			else{
+				pauseElements.add(new MenuElement(pauseScene.readString().split(";")[i]));
+			}
+			Array<String> a = new Array<String>();
+			for(int j=0; j<pauseScene.readString().split(";")[i].split(", ").length; j++){	
+				a.add(pauseScene.readString().split(";")[i].split(", ")[j].trim());
+			}
 		}
 	}
 	
@@ -118,7 +167,7 @@ public class GameSceneStage extends GameScene {
 		pause = false;
 		
 		score = 0;
-		scanCount = 3;
+		scanCount = 10;
 		//Carregando Imagens
 		imgBackground = new Texture(Gdx.files.internal("Space.png"));
 		imgShip = new Texture(Gdx.files.internal("Ship.png"));
@@ -129,7 +178,6 @@ public class GameSceneStage extends GameScene {
 		imgEnemyShipB = new Texture(Gdx.files.internal("Raid.png"));
 		imgShipDataA = new Texture(Gdx.files.internal("Bit_0.png"));
 		imgShipDataB = new Texture(Gdx.files.internal("Bit_1.png"));
-		
 		imgHeatBar = new Texture(Gdx.files.internal("SAquecimento.png"));
 		imgLifeBar = new Texture(Gdx.files.internal("Vida.png"));
 		imgArrowOff = new Texture(Gdx.files.internal("Setas.png"));
@@ -167,8 +215,34 @@ public class GameSceneStage extends GameScene {
 	public void update(GameApplication game) {
 		//Despausado
 		
-		if (!pause){
+		if (!pause && !radar){
 			
+			if(currentGroup>=enemies.size){
+				if(!venceu){
+					countdown=20;
+					venceu = true;
+				}
+				batch.setProjectionMatrix(game.camera.combined);
+				batch.begin();
+				batch.draw(venceuYEAH, 0,0);
+				if(scanCount>=10){
+					score+=10000;
+				}
+					
+				font.draw(batch, Integer.toString(score), 340, 40);
+				batch.end();
+				
+				countdown--;
+				
+				if(countdown<=0){
+					if(Gdx.input.isTouched()){
+						game.loadScene("Scenes/MainMenu.scn");
+					}
+				}
+				
+				
+			}
+			else{
 			// TODO Auto-generated method stub
 			//Gdx.gl.glClearColor(0f, 0f, 0.2f, 1);
 			//Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -240,14 +314,23 @@ public class GameSceneStage extends GameScene {
 			batch.draw(imgLifeBar, 125, 455);
 			batch.draw(imgArrowOff, 800 - imgArrowOff.getWidth(), 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), 0, 0, imgArrowOff.getWidth(), imgArrowOff.getHeight(), true, false);
 			
+			
+			
 			if(ship.raidRevealed){		
 			batch.draw(imgRaidOn, 0, 480 - imgRaidOn.getHeight());
-			font.draw(batch, Integer.toString(enemies.get(0).get(0).behaviour), 25, 360);
+			
 			}
 			else{
 				batch.draw(imgRaidOff, 0, 480 - imgRaidOff.getHeight());	
 			}
-	
+			font.draw(batch, Integer.toString(scanCount), 25, 360);
+			
+			
+			font.draw(batch, "Pontos", 800-170, 460);
+			font.draw(batch, Integer.toString(score), 800-120, 460);
+			
+			
+			batch.draw(pauseBtn, 800-50, 480-50, 40, 40 );
 			
 			batch.end();
 			shapeRenderer.end();
@@ -275,6 +358,7 @@ public class GameSceneStage extends GameScene {
 				}
 			}
 			
+			
 			for(int i=0; i<enemies.get(currentGroup).size; i++){
 				if(!enemies.get(currentGroup).get(i).visible){
 					score += enemies.get(currentGroup).get(i).score;
@@ -284,6 +368,19 @@ public class GameSceneStage extends GameScene {
 					i--;
 				}
 			}
+			
+			
+			if(Gdx.input.isTouched()){
+				Vector3 touchPos = new Vector3();
+		        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+				game.camera.unproject(touchPos);
+				if(touchPos.x>750 && touchPos.y > 430){
+					pause=true;
+				}
+			}
+			
+			
+			
 			
 			//-----------Verificar-----------
 			
@@ -302,28 +399,146 @@ public class GameSceneStage extends GameScene {
 			if(ship.hp<=0){
 				game.loadScene("Scenes/GameOver.scn");
 			}
+			}
+			
+			
 			
 		}
 		
+		//===============================================================================
+		
+		
+		
+		
+		else if(!pause && radar){
+			batch.setColor(1, 1, 1, 1);
+			batch.begin(); //Start Batch
+			switch(enemies.get(currentGroup).get(0).behaviour){
+			
+			case 0:
+				batch.draw(Desc0,0,0);
+				break;
+			case 1:
+				batch.draw(Desc1,0,0);
+				break;
+				
+			case 9: 
+			case 10:
+				batch.draw(Desc10,0,0);
+				break;
+				
+			case 5:
+				batch.draw(Desc5,0,0);
+				break;
+				
+			case 6:
+				batch.draw(Desc6,0,0);
+				break;
+				
+			case 2:
+				batch.draw(Desc2,0,0);
+				break;
+				
+			case 3:
+				batch.draw(Desc3, 0,0);
+				break;
+				
+			case 4:
+				batch.draw(Desc4,0,0);
+				break;
+
+			}
+			batch.end();
+				
+			
+			if(Gdx.input.isTouched() && countdown < 0){
+				radar=false;
+			}
+			countdown--;
+		
+		}
+
 		
 		
 		
 		
 		//=======================Pausar====================
 		else{
-			/*if Dentro do botão 1
-			pause = false;
-			 */
+			batch.setColor(1, 1, 1, 1);
+			batch.begin(); //Start Batch
 			
-			/*if Dentro do botão 2
-			 * 
-			//game.makeScene("Scenes/MainMenu.scn"); 
-			 */
+			for(int i = 0; i<pauseElements.size; i++){
+				if(pauseElements.get(i).type.equals("Button")){
+					
+				}
+				else if(pauseElements.get(i).type.equals("Label")){
+					font.draw(batch, pauseElements.get(i).info, pauseElements.get(i).x, pauseElements.get(i).y+17);
+				}
+				else if(pauseElements.get(i).type.equals("ImageButton")){
+					batch.draw(pauseElements.get(i).texture, pauseElements.get(i).x, pauseElements.get(i).y);
+				}
+				else if(pauseElements.get(i).type.equals("Image")){
+					batch.draw(pauseElements.get(i).texture, pauseElements.get(i).x, pauseElements.get(i).y);
+				}
+			}
+			
+			
+			
+			
+			batch.end();
+
+			
+			
+			
+			
+			//inputs
+			if(Gdx.input.isTouched()){
+				System.out.println("click");
+				for(int i = 0; i<pauseElements.size; i++){
+					
+					Vector3 touchPos = new Vector3();
+			        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+					game.camera.unproject(touchPos);
+					
+					
+					
+					if(touchPos.x > pauseElements.get(i).x
+					&& touchPos.y > pauseElements.get(i).y
+					&& touchPos.x < pauseElements.get(i).x + pauseElements.get(i).width 
+					&& touchPos.y < pauseElements.get(i).y + pauseElements.get(i).height){
+						System.out.println("algo Aconteceu");
+						
+						if(pauseElements.get(i).action.equals("muteMusic")){
+							System.out.println("mutou music");
+						}
+						else if(pauseElements.get(i).action.equals("muteSound")){
+							System.out.println("mutou som");
+						}
+						else if(pauseElements.get(i).action.equals("Continuar")){
+							pause=false;
+						}
+						else if(pauseElements.get(i).action.equals("Sair")){
+							Gdx.app.exit();
+						}
+						else if(pauseElements.get(i).action.trim().equals("")){
+							System.out.println("mutou som");
+						}
+						else{
+							game.loadScene(pauseElements.get(i).action);	
+						}
+					}
+				}
+			}
 			
 		}
 		
+		
+		
 		if(Gdx.input.isKeyJustPressed(Keys.P)){
 			pause = !pause;
+		}
+		if(Gdx.input.isKeyJustPressed(Keys.R)){
+			radar=!radar;
 		}
 		
 	}

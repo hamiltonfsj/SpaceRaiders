@@ -8,13 +8,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class GameSceneCut extends GameScene {
 	private int indexScene;
 	
 	private Texture background;
+	private Texture backgroundText;
 	private Array<MenuElement> menuElements;
+	private MenuElement skipBtn;
+	
+	public int BGfactor;
 	 
 	public boolean wire;
 	public int index;
@@ -27,9 +32,11 @@ public class GameSceneCut extends GameScene {
 		super(scene);		
 		buildMenu(scene);
 		shapeRenderer = new ShapeRenderer();
+		skipBtn = new MenuElement("ImageButton, Images/SkipButton.png, 455, 340, 1, Scenes/StageSelect.scn, 350, 100");
 		batch = new SpriteBatch();
 		scenes = new Array<Texture>();
-		background = new Texture(Gdx.files.internal("Images/Space.png"));
+		background = new Texture(Gdx.files.internal("Images/CutScene/Back.png"));
+		backgroundText = new Texture(Gdx.files.internal("Images/CutScene/TextBox.png"));
 		
 	}
 	
@@ -83,58 +90,30 @@ public class GameSceneCut extends GameScene {
 			
 		
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.setProjectionMatrix(game.camera.combined);
 		batch.begin();
-		batch.draw(background, 0, 0);
+		BGfactor-=1;
+		if(BGfactor<-800)
+			BGfactor=0;
+		
+		batch.draw(background, BGfactor+800, 0);
+		batch.draw(background, BGfactor, 0);
+		batch.draw(backgroundText, 0, 0);
+		batch.draw(skipBtn.texture, 720, 400, 70, 70);
+		
 		batch.end();
-
+		
 		batch.setColor(1, 1, 1, 1);
 		batch.begin(); //Start Batch
 		
-		
-		/*
-		for(int i = 0; i<menuElements.size; i++){
-			if(menuElements.get(i).type.equals("Button")){
-				if(menuElements.get(i).index==index){
-					//batch.draw(select, menuElements.get(i).x, menuElements.get(i).y);
-					font.draw(batch, menuElements.get(i).info, menuElements.get(i).x , menuElements.get(i).y+17);
-				}
-				
-				else{
-					font.draw(batch, menuElements.get(i).info, menuElements.get(i).x, menuElements.get(i).y+17);	
-				}
-			}
-			else if(menuElements.get(i).type.equals("Label")){
-				font.draw(batch, menuElements.get(i).info, menuElements.get(i).x, menuElements.get(i).y+17);
-			}
-			else if(menuElements.get(i).type.equals("ImageButton")){
-				batch.draw(menuElements.get(i).texture, menuElements.get(i).x, menuElements.get(i).y);
-			}
-			else if(menuElements.get(i).type.equals("Image")){
-				batch.draw(menuElements.get(i).texture, menuElements.get(i).x, menuElements.get(i).y);
-			}
-		}*/
 		
 		batch.draw(menuElements.get(indexScene).texture, menuElements.get(indexScene).x, menuElements.get(indexScene).y);
 		
 		batch.end();
 		
 		
-		
-		//Shows Wireframe
-		if(wire){
-			shapeRenderer.setAutoShapeType(true);
-					shapeRenderer.begin();
-						for(int i = 0; i<menuElements.size; i++){
-							if(menuElements.get(i).type.equals("Button"))shapeRenderer.setColor(new Color(1, 0, 1, 1));
-							else if(menuElements.get(i).type.equals("Label"))shapeRenderer.setColor(new Color(0, 1, 0, 1));
-							else if(menuElements.get(i).type.equals("ImageButton"))shapeRenderer.setColor(new Color(1, 1, 0, 1));
-							else shapeRenderer.setColor(new Color(1.0f, 0, 0, 1));
-							shapeRenderer.rect(menuElements.get(i).x, menuElements.get(i).y, menuElements.get(i).width, menuElements.get(i).height);
-						}
-					shapeRenderer.end();
-				}
-				
+
 		
 		//inputs
 		if(Gdx.input.isTouched() && countdown==0){
@@ -143,7 +122,13 @@ public class GameSceneCut extends GameScene {
 			countdown=20;
 			if(indexScene>=menuElements.size){
 				game.loadScene("Scenes/Stage1.scn");
-			}	
+			}
+			Vector3 touchPos = new Vector3();
+	        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			game.camera.unproject(touchPos);
+			if(touchPos.x>720 && touchPos.y > 400){
+				game.loadScene("Scenes/Stage1.scn");
+			}
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.W)){
